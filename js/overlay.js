@@ -48,32 +48,31 @@
 
 	var _TrelloService = __webpack_require__(1);
 
+	var _TrelloService2 = _interopRequireDefault(_TrelloService);
+
 	var _constants = __webpack_require__(6);
 
+	var constants = _interopRequireWildcard(_constants);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	Trello.setKey(constants.APP_KEY);
+	Trello.setToken(localStorage.getItem('trello_token') || constants.TRELLO_TOKEN);
+
+	var trelloService = new _TrelloService2.default(Trello);
 	var t = TrelloPowerUp.iframe();
-
-	Trello.setKey(_constants.APP_KEY);
-	Trello.setToken(localStorage.getItem('trello_token') || _constants.TRELLO_TOKEN);
-
 	var test = '588714b4967e55d7882ff042';
 	var lead = '588714b4967e55d7882ff00e';
 
-	// moveCard(Trello,test,lead)
-	// assignMember(Trello,test,members.akram)
-	// addLabel(Trello,test,labels.our_move)
+	trelloService.moveCard(Trello, test, lead);
+	trelloService.addLabel(Trello, test, constants.labels.our_move);
+	trelloService.assignMember(Trello, test, constants.members.akram);
+	trelloService.setDueDate(Trello, test, 1);
 
-	// getCurrentCardId(t)
-	// .then(id => {
-	//   console.log(id)
-	// })
-	// .catch(err => {
-	//   console.log(err);
-	// })
-
-	(0, _TrelloService.setDueDate)(Trello, test, 1).then(function (response) {
-	    console.log(response);
-	}).catch(function (error) {
-	    console.log(error);
+	trelloService.getCurrentCardId(t).then(function (id) {
+	    console.log(id);
 	});
 
 	t.render(function () {});
@@ -105,11 +104,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.moveCard = moveCard;
-	exports.assignMember = assignMember;
-	exports.addLabel = addLabel;
-	exports.setDueDate = setDueDate;
-	exports.getCurrentCardId = getCurrentCardId;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // TODO: Trello as global wrapper param
+
 
 	var _bluebird = __webpack_require__(2);
 
@@ -117,59 +114,95 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function moveCard(Trello, idCard, idList) {
-	  Trello.put('/cards/' + idCard + '/idList', {
-	    value: idList
-	  }, function (res) {
-	    console.log(res); // TODO: figure out what to do with these response and error message
-	  }, function (err) {
-	    console.log(err);
-	  });
-	} // TODO: Trello as global wrapper param
-	function assignMember(Trello, idCard, idMember) {
-	  Trello.put('/cards/' + idCard + '/idMembers', {
-	    value: idMember
-	  }, function (res) {
-	    console.log(res);
-	  }, function (err) {
-	    console.log(err);
-	  });
-	}
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function addLabel(Trello, idCard, idLabel) {
-	  Trello.post('/cards/' + idCard + '/idLabels', {
-	    value: idLabel
-	  }, function (res) {
-	    console.log(res);
-	  }, function (err) {
-	    console.log(err);
-	  });
-	}
+	var TrelloService = function () {
+	  function TrelloService() {
+	    _classCallCheck(this, TrelloService);
+	  }
 
-	function setDueDate(Trello, idCard, days) {
-	  // const p = bluebird.defer()
-	  var date = new Date();
-	  // increment with n days
-	  date.setDate(date.getDate() + days);
-	  return new Promise(function (resolve, reject) {
-	    var path = 'cards/' + idCard + '/due';
-	    Trello.get(path, function (success) {
-	      var _value = success._value;
-
-	      var newDate = new Date(_value).getDate();
-	      Trello.put(path, { value: date.setDate(newDate + days) }, function (success) {
-	        return resolve(success);
+	  _createClass(TrelloService, [{
+	    key: 'init',
+	    value: function init(Trello) {
+	      this.Trello = Trello;
+	    }
+	  }, {
+	    key: 'moveCard',
+	    value: function moveCard(Trello, idCard, idList) {
+	      Trello.put('/cards/' + idCard + '/idList', {
+	        value: idList
+	      }, function (res) {
+	        console.log(res); // TODO: figure out what to do with these response and error message
 	      }, function (err) {
-	        return reject(err);
+	        console.log(err);
 	      });
-	    }, function (err) {
-	      reject(err);
-	    });
-	  });
-	}
-	function getCurrentCardId(t) {
-	  return t.card('id');
-	}
+	    }
+	  }, {
+	    key: 'moveCard',
+	    value: function moveCard(Trello, idCard, idList) {
+	      Trello.put('/cards/' + idCard + '/idList', {
+	        value: idList
+	      }, function (res) {
+	        console.log(res); // TODO: figure out what to do with these response and error message
+	      }, function (err) {
+	        console.log(err);
+	      });
+	    }
+	  }, {
+	    key: 'assignMember',
+	    value: function assignMember(Trello, idCard, idMember) {
+	      Trello.put('/cards/' + idCard + '/idMembers', {
+	        value: idMember
+	      }, function (res) {
+	        console.log(res);
+	      }, function (err) {
+	        console.log(err);
+	      });
+	    }
+	  }, {
+	    key: 'addLabel',
+	    value: function addLabel(Trello, idCard, idLabel) {
+	      Trello.post('/cards/' + idCard + '/idLabels', {
+	        value: idLabel
+	      }, function (res) {
+	        console.log(res);
+	      }, function (err) {
+	        console.log(err);
+	      });
+	    }
+	  }, {
+	    key: 'setDueDate',
+	    value: function setDueDate(Trello, idCard, days) {
+	      var date = new Date();
+	      // increment with n days
+	      date.setDate(date.getDate() + days);
+	      return new Promise(function (resolve, reject) {
+	        var path = 'cards/' + idCard + '/due';
+	        Trello.get(path, function (success) {
+	          var _value = success._value;
+
+	          var newDate = new Date(_value).getDate();
+	          Trello.put(path, { value: date.setDate(newDate + days) }, function (success) {
+	            return resolve(success);
+	          }, function (err) {
+	            return reject(err);
+	          });
+	        }, function (err) {
+	          reject(err);
+	        });
+	      });
+	    }
+	  }, {
+	    key: 'getCurrentCardId',
+	    value: function getCurrentCardId(t) {
+	      return t.card('id');
+	    }
+	  }]);
+
+	  return TrelloService;
+	}();
+
+	exports.default = TrelloService;
 
 /***/ },
 /* 2 */
