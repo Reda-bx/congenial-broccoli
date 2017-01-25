@@ -13,7 +13,7 @@ TrelloPowerUp.initialize({
   'card-buttons': function(t, options) {
     return [{
       icon: GRAY_ICON,
-      text: 'compose',
+      text: 'HF Automator',
       callback: cardButtonCallback
     }];
   },

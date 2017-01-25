@@ -1,0 +1,68 @@
+{
+	"APP_KEY": "14148040b20dddf7d33c4eb19da5246b",
+	"TRELLO_TOKEN": "e2eb0dfd9ce886ea1e8fbd0ef39af858a7103b1c6fc114a900069f906963c19e",
+	"BOARD_ID": "588714b4967e55d7882ff00c",
+	"members": {
+		"reeda": "578e331dfb72eb74a29dca64",
+		"akram": "5779a7a8c9abd2cdd588ec0c"
+	},
+	"lists": [{
+		"id": "588714b4967e55d7882ff00d",
+		"name": "Incoming"
+	}, {
+		"id": "588714b4967e55d7882ff00e",
+		"name": "Lead Captured (HF Landing Page)"
+	}, {
+		"id": "588714b4967e55d7882ff00f",
+		"name": "Typeform Application"
+	}, {
+		"id": "588714b4967e55d7882ff010",
+		"name": "Call"
+	}, {
+		"id": "588714b4967e55d7882ff011",
+		"name": "To Estimate (Rough)"
+	}, {
+		"id": "588714b4967e55d7882ff012",
+		"name": "Estimated (Rough)"
+	}, {
+		"id": "588714b4967e55d7882ff013",
+		"name": "Validate Estimate (Rough)"
+	}, {
+		"id": "588714b4967e55d7882ff014",
+		"name": "Validated (Rough)"
+	}, {
+		"id": "588714b4967e55d7882ff015",
+		"name": "Kickoff User Stories"
+	}, {
+		"id": "588714b4967e55d7882ff016",
+		"name": "Discussing User Stories"
+	}, {
+		"id": "588714b4967e55d7882ff017",
+		"name": "To Estimate (with Details)"
+	}, {
+		"id": "588714b4967e55d7882ff018",
+		"name": "Estimated (with Details)"
+	}, {
+		"id": "588714b4967e55d7882ff019",
+		"name": "Validate Estimate (with Details)"
+	}, {
+		"id": "588714b4967e55d7882ff01a",
+		"name": "Validated detailed estimate"
+	}, {
+		"id": "588714b4967e55d7882ff01b",
+		"name": "Won"
+	}, {
+		"id": "588714b4967e55d7882ff01c",
+		"name": "Zombie Lead"
+	}, {
+		"id": "588714b4967e55d7882ff01d",
+		"name": "Dead Lead"
+	}, {
+		"id": "588714b4967e55d7882ff01e",
+		"name": "To Entertain"
+	}],
+	"labels": {
+		"our_move": "588714b4967e55d7882ff021",
+		"his_move": "588714b4967e55d7882ff025"
+	}
+}
