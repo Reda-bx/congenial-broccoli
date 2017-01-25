@@ -1,4 +1,5 @@
 // TODO: Trello as global wrapper param
+import bluebird from 'bluebird'
 
 export function moveCard(Trello,idCard,idList){
     Trello.put(`/cards/${idCard}/idList`, {
@@ -30,6 +31,25 @@ export function addLabel(Trello, idCard, idLabel) {
   })
 }
 
+export function setDueDate(Trello, idCard, days){
+  const date = new Date()
+  // increment with n days
+  date.setDate(date.getDate() + days)
+  return new Promise((resolve,reject) => {
+    const path = `cards/${idCard}/due`
+    Trello.get(path,
+    (success) => {
+      const {_value} = success
+      const newDate = new Date(_value).getDate()
+      Trello.put(path,{value: date.setDate((newDate + days))},
+      (success) => resolve(success),
+      (err) => reject(err))
+    },
+    (err) => {
+      reject(err)
+    })
+  })
+}
 export function getCurrentCardId(t) {
   return t.card('id')
 }

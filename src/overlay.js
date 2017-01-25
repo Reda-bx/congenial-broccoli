@@ -1,4 +1,4 @@
-import {moveCard, assignMember, addLabel, getCurrentCardId} from './TrelloService'
+import {moveCard, assignMember, addLabel, getCurrentCardId, setDueDate} from './TrelloService'
 import {TRELLO_TOKEN, APP_KEY, members, labels} from '../constants'
 
 const t = TrelloPowerUp.iframe()
@@ -6,22 +6,28 @@ const t = TrelloPowerUp.iframe()
 Trello.setKey(APP_KEY)
 Trello.setToken(localStorage.getItem('trello_token') || TRELLO_TOKEN)
 
-const incoming = '588714b4967e55d7882ff042'
+const test = '588714b4967e55d7882ff042'
 const lead = '588714b4967e55d7882ff00e'
 
-moveCard(Trello,incoming,lead)
-assignMember(Trello,incoming,members.akram)
-addLabel(Trello,incoming,labels.our_move)
+// moveCard(Trello,test,lead)
+// assignMember(Trello,test,members.akram)
+// addLabel(Trello,test,labels.our_move)
 
-getCurrentCardId(t)
-.then(id => {
-  if(id === 'ok')   console.log('ok')
-  if(id === 'ok2') console.log('ok')
-  if(id === 'ok3') console.log('ok')
-})
-.catch(err => {
-  console.log(err);
-})
+// getCurrentCardId(t)
+// .then(id => {
+//   console.log(id)
+// })
+// .catch(err => {
+//   console.log(err);
+// })
+
+// setDueDate(Trello,test,1)
+// .then(response => {
+//   console.log(response);
+// })
+// .catch(error => {
+//   console.log(error)
+// })
 
 t.render(() => {});
 
