@@ -105,8 +105,7 @@
 	  value: true
 	});
 
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // TODO: Trello as global wrapper param
-
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _bluebird = __webpack_require__(2);
 
@@ -129,45 +128,40 @@
 	  }, {
 	    key: 'moveCard',
 	    value: function moveCard(Trello, idCard, idList) {
-	      Trello.put('/cards/' + idCard + '/idList', {
-	        value: idList
-	      }, function (res) {
-	        console.log(res); // TODO: figure out what to do with these response and error message
-	      }, function (err) {
-	        console.log(err);
-	      });
-	    }
-	  }, {
-	    key: 'moveCard',
-	    value: function moveCard(Trello, idCard, idList) {
-	      Trello.put('/cards/' + idCard + '/idList', {
-	        value: idList
-	      }, function (res) {
-	        console.log(res); // TODO: figure out what to do with these response and error message
-	      }, function (err) {
-	        console.log(err);
+	      return new Promise(function (resolve, reject) {
+	        Trello.put('/cards/' + idCard + '/idList', {
+	          value: idList
+	        }, function (res) {
+	          resolve(res);
+	        }, function (err) {
+	          reject(err);
+	        });
 	      });
 	    }
 	  }, {
 	    key: 'assignMember',
 	    value: function assignMember(Trello, idCard, idMember) {
-	      Trello.put('/cards/' + idCard + '/idMembers', {
-	        value: idMember
-	      }, function (res) {
-	        console.log(res);
-	      }, function (err) {
-	        console.log(err);
+	      return new Promise(function (resolve, reject) {
+	        Trello.put('/cards/' + idCard + '/idMembers', {
+	          value: idMember
+	        }, function (res) {
+	          resolve(res);
+	        }, function (err) {
+	          reject(err);
+	        });
 	      });
 	    }
 	  }, {
 	    key: 'addLabel',
 	    value: function addLabel(Trello, idCard, idLabel) {
-	      Trello.post('/cards/' + idCard + '/idLabels', {
-	        value: idLabel
-	      }, function (res) {
-	        console.log(res);
-	      }, function (err) {
-	        console.log(err);
+	      return new Promise(function (resolve, reject) {
+	        Trello.post('/cards/' + idCard + '/idLabels', {
+	          value: idLabel
+	        }, function (res) {
+	          resolve(res);
+	        }, function (err) {
+	          reject(err);
+	        });
 	      });
 	    }
 	  }, {

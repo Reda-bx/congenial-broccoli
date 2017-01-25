@@ -7,32 +7,38 @@ export default class TrelloService {
   }
 
   moveCard(Trello,idCard,idList){
-    Trello.put(`/cards/${idCard}/idList`, {
-        value: idList
-    }, (res) => {
-      console.log(res) // TODO: figure out what to do with these response and error message
-    }, (err) => {
-      console.log(err)
+    return new Promise((resolve,reject) => {
+      Trello.put(`/cards/${idCard}/idList`, {
+          value: idList
+      }, (res) => {
+        resolve(res)
+      }, (err) => {
+        reject(err)
+      })
     })
   }
 
   assignMember(Trello, idCard, idMember){
-    Trello.put(`/cards/${idCard}/idMembers`, {
-        value: idMember
-    }, (res) => {
-      console.log(res)
-    }, (err) => {
-      console.log(err)
+    return new Promise((resolve,reject) => {
+      Trello.put(`/cards/${idCard}/idMembers`, {
+          value: idMember
+      }, (res) => {
+        resolve(res)
+      }, (err) => {
+        reject(err)
+      })
     })
   }
 
   addLabel(Trello, idCard, idLabel) {
-    Trello.post(`/cards/${idCard}/idLabels`, {
-        value: idLabel
-    }, (res) => {
-      console.log(res)
-    }, (err) => {
-      console.log(err)
+    return new Promise((resolve,reject) => {
+      Trello.post(`/cards/${idCard}/idLabels`, {
+          value: idLabel
+      }, (res) => {
+        resolve(res)
+      }, (err) => {
+        reject(err)
+      })
     })
   }
 
