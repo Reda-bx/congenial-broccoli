@@ -1,0 +1,81 @@
+.overlay {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, .5)
+}
+
+div.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0;
+    background-color: #edeff0;
+    width: 70%;
+    border-radius: 4px;
+}
+
+div.container .navbar-mail {
+    height: 80px;
+    background-color: #0079BF;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 80px;
+    padding-left: 35px;
+    font-size: 18px;
+    border-radius: 4px 4px 0 0;
+}
+
+div.container .navbar-mail span i {
+    padding-right: 5px;
+}
+
+div.container .second-row-mail {
+    border-bottom: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    padding: 20px 10px;
+}
+
+div.container .second-row-mail .input-text {
+    padding-left: 10px;
+    height: 35px;
+    width: 200px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    margin: 0 10px;
+    display: inline-block;
+}
+
+div.container .third-mail-body {
+    padding: 20px;
+    padding-bottom: 0;
+}
+
+div.container .third-mail-body textarea {
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    max-width: 100%;
+}
+
+div.container .footer {
+    text-align: right;
+    padding: 15px 20px;
+    border-radius: 4px;
+}
+
+div.container .footer button {
+    padding: 10px 40px;
+    background: linear-gradient(#CDD2D4, #CDD2D4);
+    border: 0;
+    border-radius: 3px;
+    color: #fff;
+}
+
+div.container .footer .send {
+    background: #61BD4F !important;
+    box-shadow: 0 2px 0 #3f6f21;
+    margin-left: 10px;
+}

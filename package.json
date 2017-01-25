@@ -1,0 +1,14 @@
+{
+  "name": "silver-waffle",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Reda-bx/silver-waffle",
+  "author": "<akram@hiddenfounders.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.22.0",
+    "webpack": "^1.14.0"
+  }
+}

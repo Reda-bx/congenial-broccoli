@@ -1,0 +1,24 @@
+{
+  "name": "HF Automator",
+  "description": "HF Trello Automation Addon",
+  "details": "",
+  "icon": {
+    "url": "./images/logo.png"
+  },
+  "author": "Folks at hiddenfounders",
+  "capabilities": [
+    "callback",
+    "card-badges",
+    "card-buttons",
+    "card-detail-badges",
+    "show-settings"
+  ],
+  "connectors": {
+    "iframe": {
+      "url": "./index.html"
+    }
+  },
+  "recommend": {
+    "urls": []
+  }
+}

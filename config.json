@@ -1,0 +1,43 @@
+{
+    "members": [{
+        "id": "4ef4bd9bd382fee7350fc09f",
+        "username": "adilhaizoune"
+    }, {
+        "id": "578e331dfb72eb74a29dca64",
+        "username": "reedab"
+    }, {
+        "id": "5779a7a8c9abd2cdd588ec0c",
+        "username": "akramsaouri"
+    }],
+    "cards": [{
+        "name": "Typeform Application",
+        "id": "58832d6c3d166c2f23513a87",
+        "members": ["adilhaizoune"],
+        "email": "hello from typeform application :)"
+    }, {
+        "id": "58832d6c3d166c2f23513a88",
+        "name": "Call",
+        "members": ["reedab"],
+        "email": "hello from typeform application :)"
+    }, {
+        "id": "58832d6c3d166c2f23513a89",
+        "name": "To Estimate (Rough)",
+        "members": ["akramsaouri"],
+        "email": "hello from To Estimate (Rough) application :)"
+    }, {
+        "id": "58832d6c3d166c2f23513a8a",
+        "name": "Estimated (Rough)",
+        "members": ["reedab"],
+        "email": "hello from Estimated (Rough) application :)"
+    }, {
+        "id": "58832d6c3d166c2f23513a8b",
+        "name": "Validate Estimate (Rough)",
+        "members": ["akramsaouri"],
+        "email": "hello from Validate Estimate (Rough) application :)"
+    }, {
+        "id": "58832d6c3d166c2f23513a8c",
+        "name": "Validated (Rough)",
+        "members": ["reedab"],
+        "email": "hello from Validated (Rough) application :)"
+    }]
+}
