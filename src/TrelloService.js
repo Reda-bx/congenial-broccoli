@@ -1,4 +1,5 @@
 import bluebird from 'bluebird'
+import * as db from '../db'
 
 export default class TrelloService {
 
@@ -62,7 +63,15 @@ export default class TrelloService {
     })
   }
 
-  getCurrentCardId(t) {
-    return t.card('id')
+  getCurrentList(t) {
+    return new Promise((resolve, reject) => {
+      t.list('id')
+      .then(result => {
+        return resolve(db.lists.find(k => k.id === result.id))
+      })
+      .catch(err => {
+        return reject(err)
+      })
+    })
   }
 }

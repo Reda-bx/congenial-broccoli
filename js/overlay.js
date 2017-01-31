@@ -50,29 +50,38 @@
 
 	var _TrelloService2 = _interopRequireDefault(_TrelloService);
 
-	var _constants = __webpack_require__(6);
+	var _db = __webpack_require__(6);
 
-	var constants = _interopRequireWildcard(_constants);
+	var db = _interopRequireWildcard(_db);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	Trello.setKey(constants.APP_KEY);
-	Trello.setToken(localStorage.getItem('trello_token') || constants.TRELLO_TOKEN);
+	// init trello api
+	Trello.setKey(db.APP_KEY); // TODO: move to specific constants file
+	Trello.setToken(localStorage.getItem('trello_token') || db.TRELLO_TOKEN);
 
-	var trelloService = new _TrelloService2.default(Trello);
+	// get trello power up client
 	var t = TrelloPowerUp.iframe();
-	var test = '588714b4967e55d7882ff042';
-	var lead = '588714b4967e55d7882ff00e';
 
-	trelloService.moveCard(Trello, test, lead);
-	trelloService.addLabel(Trello, test, constants.labels.our_move);
-	trelloService.assignMember(Trello, test, constants.members.akram);
-	trelloService.setDueDate(Trello, test, 1);
+	// instantiate trello service
+	var trelloService = new _TrelloService2.default(Trello);
 
-	trelloService.getCurrentCardId(t).then(function (id) {
-	    console.log(id);
+	// const test = '588714b4967e55d7882ff042'
+	// const lead = '588714b4967e55d7882ff00e'
+
+	// trelloService.moveCard(Trello,test,lead)
+	// trelloService.addLabel(Trello,test,constants.labels.our_move)
+	// trelloService.assignMember(Trello,test,constants.members.akram)
+	// trelloService.setDueDate(Trello,test,1)
+
+	// it all starts here
+	trelloService.getCurrentList(t).then(function (list) {
+	    // getting list and applying appropriate state operation
+	    console.log(list);
+	    document.getElementById('subject').value = list.emails[0].subject;
+	    document.getElementById('body').value = list.emails[0].body;
 	});
 
 	t.render(function () {});
@@ -110,6 +119,12 @@
 	var _bluebird = __webpack_require__(2);
 
 	var _bluebird2 = _interopRequireDefault(_bluebird);
+
+	var _db = __webpack_require__(6);
+
+	var db = _interopRequireWildcard(_db);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -187,9 +202,17 @@
 	      });
 	    }
 	  }, {
-	    key: 'getCurrentCardId',
-	    value: function getCurrentCardId(t) {
-	      return t.card('id');
+	    key: 'getCurrentList',
+	    value: function getCurrentList(t) {
+	      return new Promise(function (resolve, reject) {
+	        t.list('id').then(function (result) {
+	          return resolve(db.lists.find(function (k) {
+	            return k.id === result.id;
+	          }));
+	        }).catch(function (err) {
+	          return reject(err);
+	        });
+	      });
 	    }
 	  }]);
 
@@ -6238,27 +6261,87 @@
 		"lists": [
 			{
 				"id": "588714b4967e55d7882ff00d",
-				"name": "Incoming"
+				"name": "Incoming",
+				"emails": [
+					{
+						"subject": "Subject 1 for card Incoming",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					},
+					{
+						"subject": "Subject 2 for card Incoming",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					}
+				]
 			},
 			{
 				"id": "588714b4967e55d7882ff00e",
-				"name": "Lead Captured (HF Landing Page)"
+				"name": "Lead Captured (HF Landing Page)",
+				"emails": [
+					{
+						"subject": "Subject 1 for Lead Captured (HF Landing Page)",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					},
+					{
+						"subject": "Subject 2 for Lead Captured (HF Landing Page)",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					}
+				]
 			},
 			{
 				"id": "588714b4967e55d7882ff00f",
-				"name": "Typeform Application"
+				"name": "Typeform Application",
+				"emails": [
+					{
+						"subject": "Subject 2 for Typeform Application",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					},
+					{
+						"subject": "Subject 2 for Typeform Application",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					}
+				]
 			},
 			{
 				"id": "588714b4967e55d7882ff010",
-				"name": "Call"
+				"name": "Call",
+				"emails": [
+					{
+						"subject": "Subject 1 for Call",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					},
+					{
+						"subject": "Subject 2 for Call",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					}
+				]
 			},
 			{
 				"id": "588714b4967e55d7882ff011",
-				"name": "To Estimate (Rough)"
+				"name": "To Estimate (Rough)",
+				"emails": [
+					{
+						"subject": "Subject 1 for To Estimate (Rough)",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					},
+					{
+						"subject": "Subject 2 for To Estimate (Rough)",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					}
+				]
 			},
 			{
 				"id": "588714b4967e55d7882ff012",
-				"name": "Estimated (Rough)"
+				"name": "Estimated (Rough)",
+				"emails": [
+					{
+						"subject": "Subject 1 for Estimated (Rough)",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					},
+					{
+						"subject": "Subject 2 for Estimated (Rough)",
+						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+					}
+				]
 			},
 			{
 				"id": "588714b4967e55d7882ff013",
