@@ -1,11 +1,15 @@
 import TrelloService from './TrelloService'
-import * as db from '../db'
+import db from '../db'
+import {populateSelectBox} from './Utils'
+import map from 'lodash/map'
+
+let globalList;
 
 // init trello api
 Trello.setKey(db.APP_KEY) // TODO: move to specific constants file
 Trello.setToken(localStorage.getItem('trello_token') || db.TRELLO_TOKEN)
 
-// get trello power up client
+// get trello power up iframe
 const t = TrelloPowerUp.iframe()
 
 // instantiate trello service
@@ -22,13 +26,27 @@ const trelloService = new TrelloService(Trello)
 // it all starts here
 trelloService.getCurrentList(t)
 .then(list => {
-  // getting list and applying appropriate state operation
+  // make list global
+  globalList = list
   console.log(list)
-  document.getElementById('subject').value = list.emails[0].subject;
-  document.getElementById('body').value = list.emails[0].body;
+  // populate select box with subjects
+  const select = document.getElementById('subjects')
+  const options = map(list.emails,'subject')
+  populateSelectBox(select,options)
 })
 
 t.render(() => {});
+
+// detect select change and set corresponding subject and body to email
+document.getElementById('subjects').onchange = function(e) {
+  // can't arrow this because of the lexical 'this'
+  const value = this[this.selectedIndex].value
+  // get subject and value from email
+  const email = globalList.emails.find(email => email.subject === value)
+  // set subject and body to email
+  document.getElementById('subject').value = email.subject;
+  document.getElementById('body').value = email.body;
+};
 
 // close overlay if user presses escape key
 document.addEventListener('keyup', (e)  => {
@@ -44,9 +62,11 @@ document.addEventListener('click', (e) => {
     }
 });
 
-document.getElementById('closeCompose').addEventListener('click', () => {
+// close overlay on closeCompose click
+document.getElementById('close').addEventListener('click', () => {
     t.closeOverlay().done()
 })
 
-// TODO: Ideas:
-// - markdown/format email 
+// TODO: Backlog:
+// - markdown/format email
+// eslint
