@@ -2,14 +2,13 @@ import bluebird from 'bluebird'
 import * as db from '../db'
 
 export default class TrelloService {
-
   init (Trello){
     this.Trello = Trello
   }
 
-  moveCard(Trello,idCard,idList){
+  moveCard(idCard,idList){
     return new Promise((resolve,reject) => {
-      Trello.put(`/cards/${idCard}/idList`, {
+      this.Trello.put(`/cards/${idCard}/idList`, {
           value: idList
       }, (res) => {
         resolve(res)
@@ -73,5 +72,9 @@ export default class TrelloService {
         return reject(err)
       })
     })
+  }
+
+  getCurrentCard(t) {
+    return t.card('id')
   }
 }

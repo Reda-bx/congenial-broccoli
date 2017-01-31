@@ -4,6 +4,7 @@ import {populateSelectBox} from './Utils'
 import map from 'lodash/map'
 
 let globalList;
+let globalCard;
 
 // init trello api
 Trello.setKey(db.APP_KEY) // TODO: move to specific constants file
@@ -12,8 +13,9 @@ Trello.setToken(localStorage.getItem('trello_token') || db.TRELLO_TOKEN)
 // get trello power up iframe
 const t = TrelloPowerUp.iframe()
 
-// instantiate trello service
-const trelloService = new TrelloService(Trello)
+// instantiate and init trello service
+const trelloService = new TrelloService()
+trelloService.init(Trello)
 
 // const test = '588714b4967e55d7882ff042'
 // const lead = '588714b4967e55d7882ff00e'
@@ -28,11 +30,16 @@ trelloService.getCurrentList(t)
 .then(list => {
   // make list global
   globalList = list
-  console.log(list)
-  // populate select box with subjects
-  const select = document.getElementById('subjects')
-  const options = map(list.emails,'subject')
-  populateSelectBox(select,options)
+  trelloService.getCurrentCard(t)
+  .then(card => {
+    globalCard = card
+    console.log(list)
+    console.log(card)
+    // populate select box with subjects
+    const select = document.getElementById('subjects')
+    const options = map(list.emails,'subject')
+    populateSelectBox(select,options)
+  })
 })
 
 t.render(() => {});
@@ -47,6 +54,21 @@ document.getElementById('subjects').onchange = function(e) {
   document.getElementById('subject').value = email.subject;
   document.getElementById('body').value = email.body;
 };
+
+document.getElementById('send').addEventListener('click', () => {
+// get input values
+const subject = document.getElementById('subject').value
+const body = document.getElementById('body').value
+const to = document.getElementById('to').value
+const cc = document.getElementById('cc').value
+if(globalList.name === "Typeform Application"){
+  // get call list id
+  const callListID = db.lists.find(list => list.name === "Call").id
+  // move to call list
+  trelloService.moveCard(globalCard.id, callListID)
+}
+console.log({subject,body,to,cc})
+})
 
 // close overlay if user presses escape key
 document.addEventListener('keyup', (e)  => {

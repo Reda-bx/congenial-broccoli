@@ -63,6 +63,7 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var globalList = void 0;
+	var globalCard = void 0;
 
 	// init trello api
 	Trello.setKey(_db2.default.APP_KEY); // TODO: move to specific constants file
@@ -71,8 +72,9 @@
 	// get trello power up iframe
 	var t = TrelloPowerUp.iframe();
 
-	// instantiate trello service
-	var trelloService = new _TrelloService2.default(Trello);
+	// instantiate and init trello service
+	var trelloService = new _TrelloService2.default();
+	trelloService.init(Trello);
 
 	// const test = '588714b4967e55d7882ff042'
 	// const lead = '588714b4967e55d7882ff00e'
@@ -86,17 +88,21 @@
 	trelloService.getCurrentList(t).then(function (list) {
 	    // make list global
 	    globalList = list;
-	    console.log(list);
-	    // populate select box with subjects
-	    var select = document.getElementById('subjects');
-	    var options = (0, _map2.default)(list.emails, 'subject');
-	    (0, _Utils.populateSelectBox)(select, options);
+	    trelloService.getCurrentCard(t).then(function (card) {
+	        globalCard = card;
+	        console.log(list);
+	        console.log(card);
+	        // populate select box with subjects
+	        var select = document.getElementById('subjects');
+	        var options = (0, _map2.default)(list.emails, 'subject');
+	        (0, _Utils.populateSelectBox)(select, options);
+	    });
 	});
 
 	t.render(function () {});
 
 	// detect select change and set corresponding subject and body to email
-	document.getElementById("subjects").onchange = function (e) {
+	document.getElementById('subjects').onchange = function (e) {
 	    // can't arrow this because of the lexical 'this'
 	    var value = this[this.selectedIndex].value;
 	    // get subject and value from email
@@ -107,6 +113,23 @@
 	    document.getElementById('subject').value = email.subject;
 	    document.getElementById('body').value = email.body;
 	};
+
+	document.getElementById('send').addEventListener('click', function () {
+	    // get input values
+	    var subject = document.getElementById('subject').value;
+	    var body = document.getElementById('body').value;
+	    var to = document.getElementById('to').value;
+	    var cc = document.getElementById('cc').value;
+	    if (globalList.name === "Typeform Application") {
+	        // get call list id
+	        var callListID = _db2.default.lists.find(function (list) {
+	            return list.name === "Call";
+	        }).id;
+	        // move to call list
+	        trelloService.moveCard(globalCard.id, callListID);
+	    }
+	    console.log({ subject: subject, body: body, to: to, cc: cc });
+	});
 
 	// close overlay if user presses escape key
 	document.addEventListener('keyup', function (e) {
@@ -169,9 +192,11 @@
 	    }
 	  }, {
 	    key: 'moveCard',
-	    value: function moveCard(Trello, idCard, idList) {
+	    value: function moveCard(idCard, idList) {
+	      var _this = this;
+
 	      return new Promise(function (resolve, reject) {
-	        Trello.put('/cards/' + idCard + '/idList', {
+	        _this.Trello.put('/cards/' + idCard + '/idList', {
 	          value: idList
 	        }, function (res) {
 	          resolve(res);
@@ -240,6 +265,11 @@
 	          return reject(err);
 	        });
 	      });
+	    }
+	  }, {
+	    key: 'getCurrentCard',
+	    value: function getCurrentCard(t) {
+	      return t.card('id');
 	    }
 	  }]);
 
