@@ -39,6 +39,10 @@ trelloService.getCurrentList(t)
     const select = document.getElementById('subjects')
     const options = map(list.emails,'subject')
     populateSelectBox(select,options)
+    trelloService.createCheckList(globalCard.id,'Follow Ups',[
+      {name: 'item1', checked : false},
+      {name: 'item2', checked : true},
+    ])
   })
 })
 

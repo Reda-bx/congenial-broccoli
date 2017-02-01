@@ -77,4 +77,29 @@ export default class TrelloService {
   getCurrentCard(t) {
     return t.card('id')
   }
+
+  /**
+   * Create checklist and fill it with items
+   * @param {string} idCard
+   * @param {string} name [checklist name]
+   * @param {array} items [checklist items]
+   */
+  createCheckList(idCard,name,items){
+    return new Promise((resolve, reject) => {
+      this.Trello.post('/checklists',
+      {idCard,name},
+      (result) => {
+        const {id} = result
+        return Promise.all(items.map(item => {
+          return new Promise((resolve, reject) => {
+          this.Trello.post(`/checklists/${id}/checkItems`,
+            {name: item.name, checked: item.checked},
+            (result) => resolve(result),
+            (err) => resolve(err))
+          })
+        }))
+      },
+      (err) => resolve(err)
+    )})
+  }
 }

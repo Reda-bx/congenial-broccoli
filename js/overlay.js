@@ -86,68 +86,69 @@
 
 	// it all starts here
 	trelloService.getCurrentList(t).then(function (list) {
-	    // make list global
-	    globalList = list;
-	    trelloService.getCurrentCard(t).then(function (card) {
-	        globalCard = card;
-	        console.log(list);
-	        console.log(card);
-	        // populate select box with subjects
-	        var select = document.getElementById('subjects');
-	        var options = (0, _map2.default)(list.emails, 'subject');
-	        (0, _Utils.populateSelectBox)(select, options);
-	    });
+	  // make list global
+	  globalList = list;
+	  trelloService.getCurrentCard(t).then(function (card) {
+	    globalCard = card;
+	    console.log(list);
+	    console.log(card);
+	    // populate select box with subjects
+	    var select = document.getElementById('subjects');
+	    var options = (0, _map2.default)(list.emails, 'subject');
+	    (0, _Utils.populateSelectBox)(select, options);
+	    trelloService.createCheckList('588714b4967e55d7882ff087', 'Follow Ups', [{ name: 'item1', checked: false }, { name: 'item2', checked: true }]);
+	  });
 	});
 
 	t.render(function () {});
 
 	// detect select change and set corresponding subject and body to email
 	document.getElementById('subjects').onchange = function (e) {
-	    // can't arrow this because of the lexical 'this'
-	    var value = this[this.selectedIndex].value;
-	    // get subject and value from email
-	    var email = globalList.emails.find(function (email) {
-	        return email.subject === value;
-	    });
-	    // set subject and body to email
-	    document.getElementById('subject').value = email.subject;
-	    document.getElementById('body').value = email.body;
+	  // can't arrow this because of the lexical 'this'
+	  var value = this[this.selectedIndex].value;
+	  // get subject and value from email
+	  var email = globalList.emails.find(function (email) {
+	    return email.subject === value;
+	  });
+	  // set subject and body to email
+	  document.getElementById('subject').value = email.subject;
+	  document.getElementById('body').value = email.body;
 	};
 
 	document.getElementById('send').addEventListener('click', function () {
-	    // get input values
-	    var subject = document.getElementById('subject').value;
-	    var body = document.getElementById('body').value;
-	    var to = document.getElementById('to').value;
-	    var cc = document.getElementById('cc').value;
-	    if (globalList.name === "Typeform Application") {
-	        // get call list id
-	        var callListID = _db2.default.lists.find(function (list) {
-	            return list.name === "Call";
-	        }).id;
-	        // move to call list
-	        trelloService.moveCard(globalCard.id, callListID);
-	    }
-	    console.log({ subject: subject, body: body, to: to, cc: cc });
+	  // get input values
+	  var subject = document.getElementById('subject').value;
+	  var body = document.getElementById('body').value;
+	  var to = document.getElementById('to').value;
+	  var cc = document.getElementById('cc').value;
+	  if (globalList.name === "Typeform Application") {
+	    // get call list id
+	    var callListID = _db2.default.lists.find(function (list) {
+	      return list.name === "Call";
+	    }).id;
+	    // move to call list
+	    trelloService.moveCard(globalCard.id, callListID);
+	  }
+	  console.log({ subject: subject, body: body, to: to, cc: cc });
 	});
 
 	// close overlay if user presses escape key
 	document.addEventListener('keyup', function (e) {
-	    if (e.keyCode == 27) {
-	        t.closeOverlay().done();
-	    }
+	  if (e.keyCode == 27) {
+	    t.closeOverlay().done();
+	  }
 	});
 
 	// close overlay if user clicks outside our content
 	document.addEventListener('click', function (e) {
-	    if (e.target.tagName === 'body') {
-	        t.closeOverlay().done();
-	    }
+	  if (e.target.tagName === 'body') {
+	    t.closeOverlay().done();
+	  }
 	});
 
 	// close overlay on closeCompose click
 	document.getElementById('close').addEventListener('click', function () {
-	    t.closeOverlay().done();
+	  t.closeOverlay().done();
 	});
 
 	// TODO: Backlog:
@@ -270,6 +271,37 @@
 	    key: 'getCurrentCard',
 	    value: function getCurrentCard(t) {
 	      return t.card('id');
+	    }
+
+	    /**
+	     * Create checklist and fill it with items
+	     * @param {string} idCard
+	     * @param {string} name [checklist name]
+	     * @param {array} items [checklist items]
+	     */
+
+	  }, {
+	    key: 'createCheckList',
+	    value: function createCheckList(idCard, name, items) {
+	      var _this2 = this;
+
+	      return new Promise(function (resolve, reject) {
+	        _this2.Trello.post('/checklists', { idCard: idCard, name: name }, function (result) {
+	          var id = result.id;
+
+	          return Promise.all(items.map(function (item) {
+	            return new Promise(function (resolve, reject) {
+	              _this2.Trello.post('/checklists/' + id + '/checkItems', { name: item.name, checked: item.checked }, function (result) {
+	                return resolve(result);
+	              }, function (err) {
+	                return resolve(err);
+	              });
+	            });
+	          }));
+	        }, function (err) {
+	          return resolve(err);
+	        });
+	      });
 	    }
 	  }]);
 
