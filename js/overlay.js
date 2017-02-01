@@ -96,7 +96,7 @@
 	    var select = document.getElementById('subjects');
 	    var options = (0, _map2.default)(list.emails, 'subject');
 	    (0, _Utils.populateSelectBox)(select, options);
-	    trelloService.createCheckList('588714b4967e55d7882ff087', 'Follow Ups', [{ name: 'item1', checked: false }, { name: 'item2', checked: true }]);
+	    trelloService.createCheckList(globalCard.id, 'Follow Ups', [{ name: 'item1', checked: false }, { name: 'item2', checked: true }]);
 	  });
 	});
 
@@ -287,22 +287,49 @@
 
 	      return new Promise(function (resolve, reject) {
 	        _this2.Trello.post('/checklists', { idCard: idCard, name: name }, function (result) {
+	          console.log('idCheckList ' + result.id);
 	          var id = result.id;
 
 	          return Promise.all(items.map(function (item) {
-	            return new Promise(function (resolve, reject) {
-	              _this2.Trello.post('/checklists/' + id + '/checkItems', { name: item.name, checked: item.checked }, function (result) {
-	                return resolve(result);
-	              }, function (err) {
-	                return resolve(err);
-	              });
-	            });
+	            _this2.createCheckListItem(id, item.name, item.checked);
 	          }));
 	        }, function (err) {
 	          return resolve(err);
 	        });
 	      });
 	    }
+
+	    /**
+	     * Create check list item
+	     * @param {string} idCheckList
+	     * @param {string} name
+	     * @param {boolean} checked
+	     */
+
+	  }, {
+	    key: 'createCheckListItem',
+	    value: function createCheckListItem(idCheckList, name, checked) {
+	      var _this3 = this;
+
+	      return new Promise(function (resolve, reject) {
+	        _this3.Trello.post('/checklists/' + idCheckList + '/checkItems', { name: name, checked: checked }, function (result) {
+	          console.log('idCheckListItem ' + result.id);resolve(result);
+	        }, function (err) {
+	          return resolve(err);
+	        });
+	      });
+	    }
+
+	    /**
+	     * Set state of check list item
+	     * @param {string} idCheckList
+	     * @param {string} idCheckItem
+	     * @param {boolean} checked
+	     */
+
+	  }, {
+	    key: 'setCheckListItem',
+	    value: function setCheckListItem(idCheckList, idCheckItem, state) {}
 	  }]);
 
 	  return TrelloService;
