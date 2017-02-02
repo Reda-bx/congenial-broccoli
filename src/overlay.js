@@ -75,8 +75,18 @@ const cc = document.getElementById('cc').value
 if(globalList.name === "Typeform Application"){
   // get call list id
   const callListID = db.lists.find(list => list.name === "Call").id
-  // move to call list
-  trelloService.moveCard(globalCard.id, callListID)
+  const {id} = globalCard
+  Promise.all([
+    // move to call list
+    trelloService.moveCard(id,callListID),
+    // assign to akram
+    trelloService.assignMember(id,db.members.akram),
+    // add his move label
+    trelloService.addLabel(id,db.labels.his_move),
+    // add two days to due date
+    trelloService.setDueDate(id, 2)
+  ])
+  .then(result => console.log('chain done'))
 }
 console.log(`to: ${to}, cc: ${cc}, subject: ${subject}, body: ${body}`)
 trelloService.getCardCheckLists(globalCard.id)
@@ -91,7 +101,7 @@ trelloService.getCardCheckLists(globalCard.id)
   return trelloService.setCheckListItem(globalCard.id, checkList.id, checkItem.id, true)
 })
 .then(result => {
-  console.log('done');
+  t.closeOverlay().done()
 })
 })
 

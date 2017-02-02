@@ -6,6 +6,10 @@
 		"reeda": "578e331dfb72eb74a29dca64",
 		"akram": "5779a7a8c9abd2cdd588ec0c"
 	},
+	"labels": {
+		"our_move": "588714b4967e55d7882ff021",
+		"his_move": "588714b4967e55d7882ff025"
+	},
 	"lists": [{
 		"id": "588714b4967e55d7882ff00d",
 		"name": "Incoming",
@@ -108,9 +112,5 @@
 	}, {
 		"id": "588714b4967e55d7882ff01e",
 		"name": "To Entertain"
-	}],
-	"labels": {
-		"our_move": "588714b4967e55d7882ff021",
-		"his_move": "588714b4967e55d7882ff025"
-	}
+	}]
 }

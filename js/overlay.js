@@ -133,8 +133,20 @@
 	    var callListID = _db2.default.lists.find(function (list) {
 	      return list.name === "Call";
 	    }).id;
+	    var _globalCard = globalCard,
+	        id = _globalCard.id;
+
+	    Promise.all([
 	    // move to call list
-	    trelloService.moveCard(globalCard.id, callListID);
+	    trelloService.moveCard(id, callListID),
+	    // assign to akram
+	    trelloService.assignMember(id, _db2.default.members.akram),
+	    // add his move label
+	    trelloService.addLabel(id, _db2.default.labels.his_move),
+	    // add two days to due date
+	    trelloService.setDueDate(id, 2)]).then(function (result) {
+	      return console.log('chain done');
+	    });
 	  }
 	  console.log('to: ' + to + ', cc: ' + cc + ', subject: ' + subject + ', body: ' + body);
 	  trelloService.getCardCheckLists(globalCard.id).then(function (checkLists) {
@@ -151,7 +163,7 @@
 	    // mark the subject as checked in the checklist
 	    return trelloService.setCheckListItem(globalCard.id, checkList.id, checkItem.id, true);
 	  }).then(function (result) {
-	    console.log('done');
+	    t.closeOverlay().done();
 	  });
 	});
 
@@ -292,24 +304,13 @@
 	    value: function setDueDate(idCard, days) {
 	      var _this4 = this;
 
-	      var date = new Date();
-	      // increment with n days
-	      date.setDate(date.getDate() + days);
 	      return new Promise(function (resolve, reject) {
-	        var path = 'cards/' + idCard + '/due';
-	        // get current due date
-	        Trello.get(path, function (success) {
-	          var _value = success._value;
-
-	          var newDate = new Date(_value).getDate(); // FIXME
-	          // set new due date
-	          _this4.Trello.put(path, { value: date.setDate(newDate + days) }, function (success) {
-	            return resolve(success);
-	          }, function (err) {
-	            return reject(err);
-	          });
+	        var date = new Date();
+	        // add n days to current date
+	        _this4.Trello.put('cards/' + idCard + '/due', { value: date.setDate(date.getDate() + days) }, function (success) {
+	          return resolve(success);
 	        }, function (err) {
-	          reject(err);
+	          return reject(err);
 	        });
 	      });
 	    }
@@ -6480,6 +6481,10 @@
 			"reeda": "578e331dfb72eb74a29dca64",
 			"akram": "5779a7a8c9abd2cdd588ec0c"
 		},
+		"labels": {
+			"our_move": "588714b4967e55d7882ff021",
+			"his_move": "588714b4967e55d7882ff025"
+		},
 		"lists": [
 			{
 				"id": "588714b4967e55d7882ff00d",
@@ -6613,11 +6618,7 @@
 				"id": "588714b4967e55d7882ff01e",
 				"name": "To Entertain"
 			}
-		],
-		"labels": {
-			"our_move": "588714b4967e55d7882ff021",
-			"his_move": "588714b4967e55d7882ff025"
-		}
+		]
 	};
 
 /***/ },

@@ -63,24 +63,13 @@ export default class TrelloService {
    * @param {number} days
    */
   setDueDate(idCard, days){
-    const date = new Date()
-    // increment with n days
-    date.setDate(date.getDate() + days)
-    return new Promise((resolve,reject) => {
-      const path = `cards/${idCard}/due`
-      // get current due date
-      Trello.get(path,
-      (success) => {
-        const {_value} = success
-        const newDate = new Date(_value).getDate() // FIXME
-        // set new due date
-        this.Trello.put(path,{value: date.setDate((newDate + days))},
+    return new Promise((resolve, reject) => {
+      const date = new Date();
+      // add n days to current date
+      this.Trello.put(`cards/${idCard}/due`,
+        {value: date.setDate(date.getDate() + days)},
         (success) => resolve(success),
         (err) => reject(err))
-      },
-      (err) => {
-        reject(err)
-      })
     })
   }
 
