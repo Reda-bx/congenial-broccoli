@@ -1,6 +1,6 @@
 import TrelloService from './TrelloService'
 import db from '../db'
-import {populateSelectBox} from './Utils'
+import {populateSelectBox, extractEmailFromDescription} from './Utils'
 import map from 'lodash/map'
 
 let globalList;
@@ -17,33 +17,39 @@ const t = TrelloPowerUp.iframe()
 const trelloService = new TrelloService()
 trelloService.init(Trello)
 
-// const test = '588714b4967e55d7882ff042'
-// const lead = '588714b4967e55d7882ff00e'
-
-// trelloService.moveCard(Trello,test,lead)
-// trelloService.addLabel(Trello,test,constants.labels.our_move)
-// trelloService.assignMember(Trello,test,constants.members.akram)
-// trelloService.setDueDate(Trello,test,1)
-
 // it all starts here
 trelloService.getCurrentList(t)
 .then(list => {
-  // make list global
+  console.log('list details: ')
+  console.log(list)
+  // make list details global
   globalList = list
-  trelloService.getCurrentCard(t)
-  .then(card => {
-    globalCard = card
-    console.log(list)
-    console.log(card)
-    // populate select box with subjects
-    const select = document.getElementById('subjects')
-    const options = map(list.emails,'subject')
-    populateSelectBox(select,options)
-    trelloService.createCheckList(globalCard.id,'Follow Ups',[
-      {name: 'item1', checked : false},
-      {name: 'item2', checked : true},
-    ])
-  })
+  return trelloService.getCurrentCard(t)
+})
+.then(card => {
+  console.log('card details: ')
+  console.log(card)
+  // make card details global
+  globalCard = card
+  return true
+})
+.then(params => {
+  // populate select box with subjects
+  const subjectsDOM = document.getElementById('subjects')
+  const options = map(globalList.emails, 'subject')
+  populateSelectBox(subjectsDOM,options)
+  // create subjects check list
+  trelloService.createCheckList(globalCard.id, 'Follow Ups', options)
+  return trelloService.getCardDescription(t)
+})
+.then(result => {
+  // extract email from description and attach it to input
+  const email = extractEmailFromDescription(result.desc)
+  if(email) document.getElementById('to').value = email
+  return true
+})
+.then(result => {
+  console.log('done')
 })
 
 t.render(() => {});
@@ -59,6 +65,7 @@ document.getElementById('subjects').onchange = function(e) {
   document.getElementById('body').value = email.body;
 };
 
+// send email event handler
 document.getElementById('send').addEventListener('click', () => {
 // get input values
 const subject = document.getElementById('subject').value
@@ -71,7 +78,21 @@ if(globalList.name === "Typeform Application"){
   // move to call list
   trelloService.moveCard(globalCard.id, callListID)
 }
-console.log({subject,body,to,cc})
+console.log(`to: ${to}, cc: ${cc}, subject: ${subject}, body: ${body}`)
+trelloService.getCardCheckLists(globalCard.id)
+.then(checkLists => {
+  console.log('checkLists: ')
+  console.log(checkLists)
+  // get subjects checklist
+  const checkList = checkLists.find(checkList => checkList.name === 'Follow Ups')
+  // get subject of sent email
+  const checkItem = checkList.checkItems.find(checkItem => checkItem.name === subject)
+  // mark the subject as checked in the checklist
+  return trelloService.setCheckListItem(globalCard.id, checkList.id, checkItem.id, true)
+})
+.then(result => {
+  console.log('done');
+})
 })
 
 // close overlay if user presses escape key

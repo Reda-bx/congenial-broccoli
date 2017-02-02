@@ -11,3 +11,13 @@ export function populateSelectBox(select,options){
     select.appendChild(domOption)
   })
 }
+
+/**
+ * extract email from card description
+ * @param  {string} description
+ * @return {string}
+ */
+export function extractEmailFromDescription(description){
+  const emails = description.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)
+  return (emails.length > 0) ? emails[0] : null
+}

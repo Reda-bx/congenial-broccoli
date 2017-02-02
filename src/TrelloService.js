@@ -6,6 +6,11 @@ export default class TrelloService {
     this.Trello = Trello
   }
 
+  /**
+   * move card to list
+   * @param {string} idCard
+   * @param {string} idList
+   */
   moveCard(idCard,idList){
     return new Promise((resolve,reject) => {
       this.Trello.put(`/cards/${idCard}/idList`, {
@@ -18,9 +23,14 @@ export default class TrelloService {
     })
   }
 
-  assignMember(Trello, idCard, idMember){
+  /**
+   * assign new member to card
+   * @param {string} idCard
+   * @param {string} idMember
+   */
+  assignMember(idCard, idMember){
     return new Promise((resolve,reject) => {
-      Trello.put(`/cards/${idCard}/idMembers`, {
+      this.Trello.put(`/cards/${idCard}/idMembers`, {
           value: idMember
       }, (res) => {
         resolve(res)
@@ -30,9 +40,14 @@ export default class TrelloService {
     })
   }
 
-  addLabel(Trello, idCard, idLabel) {
+  /**
+   * add label to card
+   * @param {string} idCard
+   * @param {string} idLabel
+   */
+  addLabel(idCard, idLabel) {
     return new Promise((resolve,reject) => {
-      Trello.post(`/cards/${idCard}/idLabels`, {
+      this.Trello.post(`/cards/${idCard}/idLabels`, {
           value: idLabel
       }, (res) => {
         resolve(res)
@@ -42,17 +57,24 @@ export default class TrelloService {
     })
   }
 
-  setDueDate(Trello, idCard, days){
+  /**
+   * set due date of card
+   * @param {string} idCard
+   * @param {number} days
+   */
+  setDueDate(idCard, days){
     const date = new Date()
     // increment with n days
     date.setDate(date.getDate() + days)
     return new Promise((resolve,reject) => {
       const path = `cards/${idCard}/due`
+      // get current due date
       Trello.get(path,
       (success) => {
         const {_value} = success
-        const newDate = new Date(_value).getDate()
-        Trello.put(path,{value: date.setDate((newDate + days))},
+        const newDate = new Date(_value).getDate() // FIXME
+        // set new due date
+        this.Trello.put(path,{value: date.setDate((newDate + days))},
         (success) => resolve(success),
         (err) => reject(err))
       },
@@ -62,6 +84,10 @@ export default class TrelloService {
     })
   }
 
+  /**
+   * get current list
+   * @param {object} t [trello powerup iframes]
+   */
   getCurrentList(t) {
     return new Promise((resolve, reject) => {
       t.list('id')
@@ -74,6 +100,10 @@ export default class TrelloService {
     })
   }
 
+  /**
+   * get current card
+   * @param {object} t [trello powerup iframes]
+   */
   getCurrentCard(t) {
     return t.card('id')
   }
@@ -82,20 +112,22 @@ export default class TrelloService {
    * Create checklist and fill it with items
    * @param {string} idCard
    * @param {string} name [checklist name]
-   * @param {array} items [checklist items]
+   * @param {array} items [array holding name of checklist items]
    */
   createCheckList(idCard,name,items){
     return new Promise((resolve, reject) => {
       this.Trello.post('/checklists',
       {idCard,name},
       (result) => {
-        console.log(`idCheckList ${result.id}`);
         const {id} = result
-        return Promise.all(items.map(item => {
-          this.createCheckListItem(id, item.name, item.checked)
-        }))
+          Promise.all(
+            items.map(item =>
+                // checklist item is unchecked by default
+                this.createCheckListItem(id, item, false)))
+        .then(result => resolve(result))
+        .catch(err  => reject(err))
       },
-      (err) => resolve(err)
+      (err) => reject(err)
     )})
   }
 
@@ -109,7 +141,7 @@ export default class TrelloService {
     return new Promise((resolve, reject) => {
     this.Trello.post(`/checklists/${idCheckList}/checkItems`,
       {name, checked},
-      (result) => {console.log(`idCheckListItem ${result.id}`);resolve(result)},
+      (result) => resolve(result),
       (err) => resolve(err))
     })
   }
@@ -128,5 +160,17 @@ export default class TrelloService {
         result => resolve(result),
         error => reject(err))
       })
+  }
+
+  getCardCheckLists(idCard){
+    return new Promise((resolve, reject) => {
+      this.Trello.get(`cards/${idCard}/checklists`,
+        result => resolve(result),
+        error => reject(err))
+      })
+  }
+
+  getCardDescription(t){
+    return t.card('desc')
   }
 }

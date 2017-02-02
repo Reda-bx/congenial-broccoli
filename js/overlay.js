@@ -86,18 +86,31 @@
 
 	// it all starts here
 	trelloService.getCurrentList(t).then(function (list) {
-	  // make list global
+	  console.log('list details: ');
+	  console.log(list);
+	  // make list details global
 	  globalList = list;
-	  trelloService.getCurrentCard(t).then(function (card) {
-	    globalCard = card;
-	    console.log(list);
-	    console.log(card);
-	    // populate select box with subjects
-	    var select = document.getElementById('subjects');
-	    var options = (0, _map2.default)(list.emails, 'subject');
-	    (0, _Utils.populateSelectBox)(select, options);
-	    trelloService.createCheckList(globalCard.id, 'Follow Ups', [{ name: 'item1', checked: false }, { name: 'item2', checked: true }]);
-	  });
+	  return trelloService.getCurrentCard(t);
+	}).then(function (card) {
+	  console.log('card details: ');
+	  console.log(card);
+	  // make card details global
+	  globalCard = card;
+	  return true;
+	}).then(function (params) {
+	  // populate select box with subjects
+	  var subjectsDOM = document.getElementById('subjects');
+	  var options = (0, _map2.default)(globalList.emails, 'subject');
+	  (0, _Utils.populateSelectBox)(subjectsDOM, options);
+	  // create subjects check list
+	  trelloService.createCheckList(globalCard.id, 'Follow Ups', options);
+	  return trelloService.getCardDescription(t);
+	}).then(function (result) {
+	  var email = (0, _Utils.extractEmailFromDescription)(result.desc);
+	  if (email) document.getElementById('to').value = email;
+	  return true;
+	}).then(function (result) {
+	  console.log('done');
 	});
 
 	t.render(function () {});
@@ -115,6 +128,7 @@
 	  document.getElementById('body').value = email.body;
 	};
 
+	// send email event handler
 	document.getElementById('send').addEventListener('click', function () {
 	  // get input values
 	  var subject = document.getElementById('subject').value;
@@ -129,7 +143,35 @@
 	    // move to call list
 	    trelloService.moveCard(globalCard.id, callListID);
 	  }
-	  console.log({ subject: subject, body: body, to: to, cc: cc });
+	  console.log('to: ' + to + ', cc: ' + cc + ', subject: ' + subject + ', body: ' + body);
+	  trelloService.getCardCheckLists(globalCard.id).then(function (checkLists) {
+	    console.log('checkLists: ');
+	    console.log(checkLists);
+	    // get subjects checklist
+	    var checkList = checkLists.find(function (checkList) {
+	      return checkList.name === 'Follow Ups';
+	    });
+	    // get subject of sent email
+	    var checkItem = checkList.checkItems.find(function (checkItem) {
+	      return checkItem.name === subject;
+	    });
+	    // mark the subject as checked in the checklist
+	    return trelloService.setCheckListItem(globalCard.id, checkList.id, checkItem.id, true);
+	  }).then(function (result) {
+	    console.log('done');
+	  });
+	  //     trelloService.getCardCheckLists(globalCard.id)
+	  //     .then(checklists => {
+	  //         console.log('checklists: ')
+	  //         console.log(checklists)
+	  //         // get follow ups checklist
+	  //         const checklist = checklists.find(checklist => checklist.name === 'Follow Ups')
+	  //         // if(!checklist) return
+	  //         return checklist
+	  //     })
+	  //     .then(checklist =>
+	  //         trelloService.setCheckListItem(globalCard.id,checklist.id,checklist.checkItems[0].id,true))
+	  //     .then(result => console.log(result))
 	});
 
 	// close overlay if user presses escape key
@@ -191,6 +233,13 @@
 	    value: function init(Trello) {
 	      this.Trello = Trello;
 	    }
+
+	    /**
+	     * move card to list
+	     * @param {string} idCard
+	     * @param {string} idList
+	     */
+
 	  }, {
 	    key: 'moveCard',
 	    value: function moveCard(idCard, idList) {
@@ -206,11 +255,20 @@
 	        });
 	      });
 	    }
+
+	    /**
+	     * assign new member to card
+	     * @param {string} idCard
+	     * @param {string} idMember
+	     */
+
 	  }, {
 	    key: 'assignMember',
-	    value: function assignMember(Trello, idCard, idMember) {
+	    value: function assignMember(idCard, idMember) {
+	      var _this2 = this;
+
 	      return new Promise(function (resolve, reject) {
-	        Trello.put('/cards/' + idCard + '/idMembers', {
+	        _this2.Trello.put('/cards/' + idCard + '/idMembers', {
 	          value: idMember
 	        }, function (res) {
 	          resolve(res);
@@ -219,11 +277,20 @@
 	        });
 	      });
 	    }
+
+	    /**
+	     * add label to card
+	     * @param {string} idCard
+	     * @param {string} idLabel
+	     */
+
 	  }, {
 	    key: 'addLabel',
-	    value: function addLabel(Trello, idCard, idLabel) {
+	    value: function addLabel(idCard, idLabel) {
+	      var _this3 = this;
+
 	      return new Promise(function (resolve, reject) {
-	        Trello.post('/cards/' + idCard + '/idLabels', {
+	        _this3.Trello.post('/cards/' + idCard + '/idLabels', {
 	          value: idLabel
 	        }, function (res) {
 	          resolve(res);
@@ -232,19 +299,30 @@
 	        });
 	      });
 	    }
+
+	    /**
+	     * set due date of card
+	     * @param {string} idCard
+	     * @param {number} days
+	     */
+
 	  }, {
 	    key: 'setDueDate',
-	    value: function setDueDate(Trello, idCard, days) {
+	    value: function setDueDate(idCard, days) {
+	      var _this4 = this;
+
 	      var date = new Date();
 	      // increment with n days
 	      date.setDate(date.getDate() + days);
 	      return new Promise(function (resolve, reject) {
 	        var path = 'cards/' + idCard + '/due';
+	        // get current due date
 	        Trello.get(path, function (success) {
 	          var _value = success._value;
 
-	          var newDate = new Date(_value).getDate();
-	          Trello.put(path, { value: date.setDate(newDate + days) }, function (success) {
+	          var newDate = new Date(_value).getDate(); // FIXME
+	          // set new due date
+	          _this4.Trello.put(path, { value: date.setDate(newDate + days) }, function (success) {
 	            return resolve(success);
 	          }, function (err) {
 	            return reject(err);
@@ -254,6 +332,12 @@
 	        });
 	      });
 	    }
+
+	    /**
+	     * get current list
+	     * @param {object} t [trello powerup iframes]
+	     */
+
 	  }, {
 	    key: 'getCurrentList',
 	    value: function getCurrentList(t) {
@@ -267,6 +351,12 @@
 	        });
 	      });
 	    }
+
+	    /**
+	     * get current card
+	     * @param {object} t [trello powerup iframes]
+	     */
+
 	  }, {
 	    key: 'getCurrentCard',
 	    value: function getCurrentCard(t) {
@@ -277,24 +367,30 @@
 	     * Create checklist and fill it with items
 	     * @param {string} idCard
 	     * @param {string} name [checklist name]
-	     * @param {array} items [checklist items]
+	     * @param {array} items [array holding name of checklist items]
 	     */
 
 	  }, {
 	    key: 'createCheckList',
 	    value: function createCheckList(idCard, name, items) {
-	      var _this2 = this;
+	      var _this5 = this;
 
 	      return new Promise(function (resolve, reject) {
-	        _this2.Trello.post('/checklists', { idCard: idCard, name: name }, function (result) {
-	          console.log('idCheckList ' + result.id);
+	        _this5.Trello.post('/checklists', { idCard: idCard, name: name }, function (result) {
 	          var id = result.id;
 
-	          return Promise.all(items.map(function (item) {
-	            _this2.createCheckListItem(id, item.name, item.checked);
-	          }));
+	          Promise.all(items.map(function (item) {
+	            return (
+	              // checklist item is unchecked by default
+	              _this5.createCheckListItem(id, item, false)
+	            );
+	          })).then(function (result) {
+	            return resolve(result);
+	          }).catch(function (err) {
+	            return reject(err);
+	          });
 	        }, function (err) {
-	          return resolve(err);
+	          return reject(err);
 	        });
 	      });
 	    }
@@ -309,11 +405,11 @@
 	  }, {
 	    key: 'createCheckListItem',
 	    value: function createCheckListItem(idCheckList, name, checked) {
-	      var _this3 = this;
+	      var _this6 = this;
 
 	      return new Promise(function (resolve, reject) {
-	        _this3.Trello.post('/checklists/' + idCheckList + '/checkItems', { name: name, checked: checked }, function (result) {
-	          console.log('idCheckListItem ' + result.id);resolve(result);
+	        _this6.Trello.post('/checklists/' + idCheckList + '/checkItems', { name: name, checked: checked }, function (result) {
+	          return resolve(result);
 	        }, function (err) {
 	          return resolve(err);
 	        });
@@ -321,7 +417,8 @@
 	    }
 
 	    /**
-	     * Set state of check list item
+	     * Set checked state of check list item
+	     * @param {string} idCard
 	     * @param {string} idCheckList
 	     * @param {string} idCheckItem
 	     * @param {boolean} checked
@@ -329,7 +426,35 @@
 
 	  }, {
 	    key: 'setCheckListItem',
-	    value: function setCheckListItem(idCheckList, idCheckItem, state) {}
+	    value: function setCheckListItem(idCard, idCheckList, idCheckItem, checked) {
+	      var _this7 = this;
+
+	      return new Promise(function (resolve, reject) {
+	        _this7.Trello.put('/cards/' + idCard + '/checklist/' + idCheckList + '/checkItem/' + idCheckItem + '/state', { value: checked }, function (result) {
+	          return resolve(result);
+	        }, function (error) {
+	          return reject(err);
+	        });
+	      });
+	    }
+	  }, {
+	    key: 'getCardCheckLists',
+	    value: function getCardCheckLists(idCard) {
+	      var _this8 = this;
+
+	      return new Promise(function (resolve, reject) {
+	        _this8.Trello.get('cards/' + idCard + '/checklists', function (result) {
+	          return resolve(result);
+	        }, function (error) {
+	          return reject(err);
+	        });
+	      });
+	    }
+	  }, {
+	    key: 'getCardDescription',
+	    value: function getCardDescription(t) {
+	      return t.card('desc');
+	    }
 	  }]);
 
 	  return TrelloService;
@@ -6524,6 +6649,7 @@
 	  value: true
 	});
 	exports.populateSelectBox = populateSelectBox;
+	exports.extractEmailFromDescription = extractEmailFromDescription;
 	/**
 	 * [populateSelectBox populate a select box with set of options]
 	 * @param  {dom} select
@@ -6536,6 +6662,16 @@
 	    domOption.innerHTML = option;
 	    select.appendChild(domOption);
 	  });
+	}
+
+	/**
+	 * extract email from card description
+	 * @param  {string} description
+	 * @return {string}
+	 */
+	function extractEmailFromDescription(description) {
+	  var emails = description.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
+	  return emails.length > 0 ? emails[0] : null;
 	}
 
 /***/ },
