@@ -76,14 +76,6 @@
 	var trelloService = new _TrelloService2.default();
 	trelloService.init(Trello);
 
-	// const test = '588714b4967e55d7882ff042'
-	// const lead = '588714b4967e55d7882ff00e'
-
-	// trelloService.moveCard(Trello,test,lead)
-	// trelloService.addLabel(Trello,test,constants.labels.our_move)
-	// trelloService.assignMember(Trello,test,constants.members.akram)
-	// trelloService.setDueDate(Trello,test,1)
-
 	// it all starts here
 	trelloService.getCurrentList(t).then(function (list) {
 	  console.log('list details: ');
@@ -106,6 +98,7 @@
 	  trelloService.createCheckList(globalCard.id, 'Follow Ups', options);
 	  return trelloService.getCardDescription(t);
 	}).then(function (result) {
+	  // extract email from description and attach it to input
 	  var email = (0, _Utils.extractEmailFromDescription)(result.desc);
 	  if (email) document.getElementById('to').value = email;
 	  return true;
@@ -160,18 +153,6 @@
 	  }).then(function (result) {
 	    console.log('done');
 	  });
-	  //     trelloService.getCardCheckLists(globalCard.id)
-	  //     .then(checklists => {
-	  //         console.log('checklists: ')
-	  //         console.log(checklists)
-	  //         // get follow ups checklist
-	  //         const checklist = checklists.find(checklist => checklist.name === 'Follow Ups')
-	  //         // if(!checklist) return
-	  //         return checklist
-	  //     })
-	  //     .then(checklist =>
-	  //         trelloService.setCheckListItem(globalCard.id,checklist.id,checklist.checkItems[0].id,true))
-	  //     .then(result => console.log(result))
 	});
 
 	// close overlay if user presses escape key
@@ -195,7 +176,7 @@
 
 	// TODO: Backlog:
 	// - markdown/format email
-	// eslint
+	// - eslint
 
 /***/ },
 /* 1 */
@@ -6533,7 +6514,7 @@
 				"name": "Typeform Application",
 				"emails": [
 					{
-						"subject": "Subject 2 for Typeform Application",
+						"subject": "Subject 1 for Typeform Application",
 						"body": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 					},
 					{

@@ -116,4 +116,4 @@ document.getElementById('close').addEventListener('click', () => {
 
 // TODO: Backlog:
 // - markdown/format email
-// eslint
+// - eslint
