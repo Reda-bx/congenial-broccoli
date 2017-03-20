@@ -79,3 +79,14 @@ div.container .footer .send {
     box-shadow: 0 2px 0 #3f6f21;
     margin-left: 10px;
 }
+
+.messages {
+  margin: auto 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  border-top: 1px solid gray;
+  margin-top: 10px;
+}

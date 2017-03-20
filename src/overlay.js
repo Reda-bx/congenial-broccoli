@@ -25,6 +25,22 @@ t.list('id')
   // extract email from description and attach it to input
   const email = extractEmailFromDescription(result.desc)
   if(email) document.getElementById('to').value = email
+  return axios.get(`https://hf-automator.herokuapp.com/mail/get/'threadId'`)
+})
+.then(res => {
+  console.log(res)
+  const container = document.getElementsByClassName('messages')[0]
+  const {data} = res
+  data.forEach(row => {
+    const div = document.createElement('div')
+    div.className = 'message'
+    div.innerHTML = `
+        <h4>sender@hf.com</h4>
+        <p>${row.data}</p>
+        <span>12/02/2016</span>
+    `
+    container.appendChild(div)
+  })
 })
 .catch(err => {
   console.log(err)
@@ -50,7 +66,7 @@ document.getElementById('send').addEventListener('click', () => {
   const body = document.getElementById('body').value
   const receiver = document.getElementById('to').value
   const cc = document.getElementById('cc').value
-  axios.post('https://hf-automator.herokuapp.com/send',{
+  axios.post('https://hf-automator.herokuapp.com/mail/send',{
       subject,
       body,
       receiver

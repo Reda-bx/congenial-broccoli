@@ -79,6 +79,18 @@
 	  // extract email from description and attach it to input
 	  var email = extractEmailFromDescription(result.desc);
 	  if (email) document.getElementById('to').value = email;
+	  return _axios2.default.get('https://hf-automator.herokuapp.com/mail/get/\'threadId\'');
+	}).then(function (res) {
+	  console.log(res);
+	  var container = document.getElementsByClassName('messages')[0];
+	  var data = res.data;
+
+	  data.forEach(function (row) {
+	    var div = document.createElement('div');
+	    div.className = 'message';
+	    div.innerHTML = '\n        <h4>sender@hf.com</h4>\n        <p>' + row.data + '</p>\n        <span>12/02/2016</span>\n    ';
+	    container.appendChild(div);
+	  });
 	}).catch(function (err) {
 	  console.log(err);
 	});
@@ -105,7 +117,7 @@
 	  var body = document.getElementById('body').value;
 	  var receiver = document.getElementById('to').value;
 	  var cc = document.getElementById('cc').value;
-	  _axios2.default.post('https://hf-automator.herokuapp.com/send', {
+	  _axios2.default.post('https://hf-automator.herokuapp.com/mail/send', {
 	    subject: subject,
 	    body: body,
 	    receiver: receiver
