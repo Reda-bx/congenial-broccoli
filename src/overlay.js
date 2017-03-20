@@ -6,7 +6,6 @@ let globalList;
 // get trello power up iframe
 const t = TrelloPowerUp.iframe()
 
-// it all starts here
 // get current list
 t.list('id')
 .then(result => {
@@ -26,7 +25,6 @@ t.list('id')
   // extract email from description and attach it to input
   const email = extractEmailFromDescription(result.desc)
   if(email) document.getElementById('to').value = email
-  console.log('done')
 })
 .catch(err => {
   console.log(err)
@@ -50,9 +48,20 @@ document.getElementById('send').addEventListener('click', () => {
   // get input values
   const subject = document.getElementById('subject').value
   const body = document.getElementById('body').value
-  const to = document.getElementById('to').value
+  const receiver = document.getElementById('to').value
   const cc = document.getElementById('cc').value
-  // t.closeOverlay().done()
+  axios.post('https://hf-automator.herokuapp.com/send',{
+      subject,
+      body,
+      receiver
+  })
+  .then(res => {
+    console.log(res)
+    t.closeOverlay().done()
+  })
+  .catch(err => {
+    console.log(err)
+  })
 })
 
 // close overlay if user presses escape key

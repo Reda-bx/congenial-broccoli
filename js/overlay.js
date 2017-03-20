@@ -61,7 +61,6 @@
 	// get trello power up iframe
 	var t = TrelloPowerUp.iframe();
 
-	// it all starts here
 	// get current list
 	t.list('id').then(function (result) {
 	  var id = result.id;
@@ -80,7 +79,6 @@
 	  // extract email from description and attach it to input
 	  var email = extractEmailFromDescription(result.desc);
 	  if (email) document.getElementById('to').value = email;
-	  console.log('done');
 	}).catch(function (err) {
 	  console.log(err);
 	});
@@ -105,9 +103,18 @@
 	  // get input values
 	  var subject = document.getElementById('subject').value;
 	  var body = document.getElementById('body').value;
-	  var to = document.getElementById('to').value;
+	  var receiver = document.getElementById('to').value;
 	  var cc = document.getElementById('cc').value;
-	  // t.closeOverlay().done()
+	  _axios2.default.post('https://hf-automator.herokuapp.com/send', {
+	    subject: subject,
+	    body: body,
+	    receiver: receiver
+	  }).then(function (res) {
+	    console.log(res);
+	    t.closeOverlay().done();
+	  }).catch(function (err) {
+	    console.log(err);
+	  });
 	});
 
 	// close overlay if user presses escape key
