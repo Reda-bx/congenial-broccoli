@@ -83,12 +83,17 @@
 	}).then(function (res) {
 	  console.log(res);
 	  var container = document.getElementsByClassName('messages')[0];
-	  var data = res.data;
-
+	  var data = res.data.reverse();
 	  data.forEach(function (row) {
 	    var div = document.createElement('div');
 	    div.className = 'message';
-	    div.innerHTML = '\n        <h4>sender@hf.com</h4>\n        <p>' + row.data + '</p>\n        <span>12/02/2016</span>\n    ';
+	    div.innerHTML = '\n      <div class="message-header">\n        <h5>' + row.payload.headers.find(function (header) {
+	      return header.name === 'Subject';
+	    }).value + '</h5>\n        <span>' + row.payload.headers.find(function (header) {
+	      return header.name === 'Date';
+	    }).value + '</span>\n      </div>\n      <div class="message-body">\n        ' + row.data + '\n      </div>\n      <div class="message-footer">\n        <h5>' + row.payload.headers.find(function (header) {
+	      return header.name === 'From';
+	    }).value + '</h5>\n      </div>\n    ';
 	    container.appendChild(div);
 	  });
 	}).catch(function (err) {

@@ -30,14 +30,21 @@ t.list('id')
 .then(res => {
   console.log(res)
   const container = document.getElementsByClassName('messages')[0]
-  const {data} = res
+  const data = res.data.reverse()
   data.forEach(row => {
     const div = document.createElement('div')
     div.className = 'message'
     div.innerHTML = `
-        <h4>sender@hf.com</h4>
-        <p>${row.data}</p>
-        <span>12/02/2016</span>
+      <div class="message-header">
+        <h5>${row.payload.headers.find(header => header.name === 'Subject').value}</h5>
+        <span>${row.payload.headers.find(header => header.name === 'Date').value}</span>
+      </div>
+      <div class="message-body">
+        ${row.data}
+      </div>
+      <div class="message-footer">
+        <h5>${row.payload.headers.find(header => header.name === 'From').value}</h5>
+      </div>
     `
     container.appendChild(div)
   })
